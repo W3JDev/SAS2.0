@@ -1,0 +1,39 @@
+<!-- staff-login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Login</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Staff Login</h1>
+    
+    <label>Passcode</label>
+    <input type="password" id="staffPasscode" class="input-field" placeholder="4 digits">
+    
+    <button class="btn" onclick="doStaffLogin()">Login</button>
+    
+    <div class="home-row">
+      <a href="index.html" class="btn">Go Home</a>
+    </div>
+  </div>
+  
+  <script>
+    function doStaffLogin() {
+      let pass = document.getElementById("staffPasscode").value.trim();
+      let staff = findStaffByPasscode(pass);
+      if (!staff) {
+        alert("Invalid passcode.");
+        return;
+      }
+      // store staff session
+      localStorage.setItem("staffSession", pass);
+      // redirect
+      window.location.href = "staff-home.html";
+    }
+  </script>
+</body>
+</html>

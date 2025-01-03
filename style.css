@@ -1,0 +1,180 @@
+/* style.css - Responsive, premium style for Phase 1 */
+
+/* RESET / BASE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  background: linear-gradient(to bottom, #b92b27, #1565C0);
+  min-height: 100vh;
+  margin: 0;
+  color: #333;
+}
+
+/* CONTAINER / CARD STYLES */
+.container {
+  width: 90%;
+  max-width: 800px;
+  background: #fff;
+  margin: 30px auto;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  padding: 20px;
+}
+
+h1, h2, h3 {
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  background: #1565C0;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  margin: 5px 0;
+  font-size: 16px;
+}
+.btn:hover {
+  background: #0d47a1;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Utility for hidden elements */
+.hidden {
+  display: none !important;
+}
+
+/* HOME / LINK ROW */
+.link-row {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.link-row a {
+  margin: 0 10px;
+}
+
+/* TOP-RIGHT or TOP-RIGHT Buttons Row */
+.home-row {
+  text-align: right;
+  margin-top: 20px;
+}
+
+/* KIOSK SPECIFIC */
+.kiosk-flex {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.kiosk-section {
+  flex: 1;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.numpad-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  justify-items: center;
+  margin: 20px auto;
+  max-width: 300px;
+}
+.numpad-btn {
+  background: #1565C0;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.numpad-btn:hover {
+  background: #0d47a1;
+}
+
+/* CAMERA PREVIEW */
+#cameraPreview {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 20px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  display: none; /* Optional to hide by default in Phase 1 */
+}
+video, img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    max-width: 600px; 
+    margin: 20px auto;
+    padding: 15px;
+  }
+  h1, h2, h3 {
+    font-size: 1.2rem;
+  }
+  .btn {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .numpad-container {
+    max-width: 250px;
+  }
+  .numpad-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+  .kiosk-flex {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+    max-width: 400px;
+    margin: 15px auto;
+    padding: 10px;
+  }
+  h1, h2, h3 {
+    font-size: 1rem;
+  }
+  .btn {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+  .numpad-container {
+    grid-template-columns: repeat(3, 60px);
+    max-width: 200px;
+  }
+  .numpad-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+  }
+}

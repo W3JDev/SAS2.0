@@ -1,0 +1,40 @@
+<!-- admin-login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Login</h1>
+    
+    <label>Username</label>
+    <input type="text" id="adminUser" class="input-field" placeholder="admin@example.com">
+    
+    <label>Password</label>
+    <input type="password" id="adminPass" class="input-field" placeholder="admin123">
+    
+    <button class="btn" onclick="doAdminLogin()">Login</button>
+    
+    <div class="home-row">
+      <a href="index.html" class="btn">Go Home</a>
+    </div>
+  </div>
+  
+  <script>
+    function doAdminLogin() {
+      let user = document.getElementById("adminUser").value.trim();
+      let pass = document.getElementById("adminPass").value.trim();
+      if (adminLogin(user, pass)) {
+        // redirect
+        window.location.href = "admin-dashboard.html";
+      } else {
+        alert("Invalid credentials");
+      }
+    }
+  </script>
+</body>
+</html>

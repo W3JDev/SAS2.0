@@ -1,0 +1,52 @@
+<!-- admin-dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+  <div class="container" id="adminContainer">
+    <h1>Admin Dashboard (Phase 1)</h1>
+    
+    <div class="home-row">
+      <a href="index.html" class="btn">Go Home</a>
+      <button class="btn" onclick="handleLogout()">Logout</button>
+    </div>
+    
+    <hr>
+    <h2>Staff Management</h2>
+    <p>(Placeholder) In Phase 2, you’ll add forms for new staff, wage details, etc.</p>
+    
+    <hr>
+    <h2>Attendance Records</h2>
+    <p>(Placeholder) You can show/edit a table of attendance here in Phase 2.</p>
+    
+    <hr>
+    <h2>Shift Management</h2>
+    <p>(Placeholder) Create shift schedules, assign to staff, etc.</p>
+    
+    <hr>
+    <h2>Payslip Generation</h2>
+    <p>(Placeholder) Future feature for wage calculations, MC, AL, etc.</p>
+    
+  </div>
+  
+  <script>
+    function handleLogout() {
+      adminLogout();
+      window.location.href = "index.html";
+    }
+    
+    // Phase 1 check: If not logged in, redirect
+    window.onload = function() {
+      if (!isAdminLoggedIn()) {
+        alert("You are not logged in as Admin.");
+        window.location.href = "index.html";
+      }
+    };
+  </script>
+</body>
+</html>

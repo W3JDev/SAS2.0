@@ -1,0 +1,67 @@
+<!-- staff-home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Home</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+  <div class="container" id="staffContainer">
+    <h1>Staff Portal (Phase 1)</h1>
+    
+    <div class="home-row">
+      <a href="index.html" class="btn">Go Home</a>
+      <button class="btn" onclick="staffLogout()">Logout</button>
+    </div>
+    
+    <hr>
+    <h2>Your Profile</h2>
+    <p id="staffProfileArea"></p>
+    
+    <hr>
+    <h2>Your Attendance</h2>
+    <p>(Placeholder) In Phase 2, you’ll see clock in/out records, request missed punch, etc.</p>
+    
+    <hr>
+    <h2>Your Shifts / Leaves</h2>
+    <p>(Placeholder) Phase 2: shift schedule, MC/AL/UL submissions, etc.</p>
+    
+    <hr>
+    <h2>Your Payslips</h2>
+    <p>(Placeholder) Accept/approve payslips in next phases.</p>
+  </div>
+  
+  <script>
+    let currentStaff = null;
+    
+    function staffLogout() {
+      localStorage.removeItem("staffSession");
+      window.location.href = "index.html";
+    }
+    
+    window.onload = function() {
+      let pass = localStorage.getItem("staffSession");
+      if(!pass) {
+        alert("Not logged in as staff.");
+        window.location.href = "index.html";
+        return;
+      }
+      currentStaff = findStaffByPasscode(pass);
+      if(!currentStaff) {
+        alert("Invalid staff session");
+        window.location.href = "index.html";
+        return;
+      }
+      // Display basic info
+      document.getElementById("staffProfileArea").innerText = 
+        `Name: ${currentStaff.name}\n` +
+        `Passcode: ${currentStaff.passcode}\n` +
+        `Role: ${currentStaff.role}\n` +
+        `Start Date: ${currentStaff.startDate}\n` +
+        `WageType: ${currentStaff.wageType}, WageRate: ${currentStaff.wageRate}`;
+    };
+  </script>
+</body>
+</html>

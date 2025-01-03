@@ -1,0 +1,100 @@
+<!-- kiosk.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kiosk</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Kiosk - Clock In/Out</h1>
+    <div class="home-row">
+      <a href="index.html" class="btn">Go Home</a>
+    </div>
+    
+    <!-- Flex container for camera + keypad -->
+    <div class="kiosk-flex">
+      <!-- Camera section (Phase 1: optional to show/hide) -->
+      <div class="kiosk-section" id="cameraPreview">
+        <video id="cameraStream" autoplay playsinline></video>
+      </div>
+      
+      <!-- Keypad + passcode -->
+      <div class="kiosk-section">
+        <input type="password" id="kioskPasscode" class="input-field" 
+               style="max-width:200px; font-size:24px; text-align:center;" 
+               placeholder="Passcode">
+        
+        <div class="numpad-container">
+          <button class="numpad-btn" onclick="numpadInput('1')">1</button>
+          <button class="numpad-btn" onclick="numpadInput('2')">2</button>
+          <button class="numpad-btn" onclick="numpadInput('3')">3</button>
+
+          <button class="numpad-btn" onclick="numpadInput('4')">4</button>
+          <button class="numpad-btn" onclick="numpadInput('5')">5</button>
+          <button class="numpad-btn" onclick="numpadInput('6')">6</button>
+
+          <button class="numpad-btn" onclick="numpadInput('7')">7</button>
+          <button class="numpad-btn" onclick="numpadInput('8')">8</button>
+          <button class="numpad-btn" onclick="numpadInput('9')">9</button>
+
+          <button class="numpad-btn" onclick="numpadInput('0')">0</button>
+          <button class="numpad-btn" onclick="clearNumpad()">C</button>
+          <button class="numpad-btn" onclick="delNumpad()">←</button>
+        </div>
+        
+        <button class="btn" style="font-size:18px; margin-top:15px;" onclick="doClockIn()">Clock In</button>
+        <button class="btn" style="font-size:18px; margin-left:20px;" onclick="doClockOut()">Clock Out</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    /* KIOSK SCRIPTS */
+    function numpadInput(val) {
+      let passField = document.getElementById("kioskPasscode");
+      passField.value += val;
+    }
+    function clearNumpad() {
+      document.getElementById("kioskPasscode").value = "";
+    }
+    function delNumpad() {
+      let passField = document.getElementById("kioskPasscode");
+      passField.value = passField.value.slice(0, -1);
+    }
+    
+    function doClockIn() {
+      let passcode = document.getElementById("kioskPasscode").value.trim();
+      if(!passcode) {
+        alert("Please enter passcode.");
+        return;
+      }
+      // Phase 1: no camera capture
+      let result = clockIn(passcode, null);
+      if(result.error) {
+        alert(result.error);
+      } else {
+        alert(result.success);
+        clearNumpad();
+      }
+    }
+    
+    function doClockOut() {
+      let passcode = document.getElementById("kioskPasscode").value.trim();
+      if(!passcode) {
+        alert("Please enter passcode.");
+        return;
+      }
+      let result = clockOut(passcode);
+      if(result.error) {
+        alert(result.error);
+      } else {
+        alert(result.success);
+        clearNumpad();
+      }
+    }
+  </script>
+</body>
+</html>
