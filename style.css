@@ -178,3 +178,32 @@ video, img {
     font-size: 16px;
   }
 }
+
+/* Additional for Phase 2 tabs in admin dashboard */
+.tab-container {
+  margin-top: 20px;
+}
+.tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.tab-buttons .btn {
+  flex: none;
+  margin: 0;
+  border-radius: 0;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+  margin-top: 10px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
