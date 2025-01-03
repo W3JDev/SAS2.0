@@ -1,52 +1,434 @@
-<!-- admin-dashboard.html -->
+<!-- admin-dashboard.html - Phase 2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+  <title>Admin Dashboard (Phase 2)</title>
   <link rel="stylesheet" href="style.css">
+  <!-- jsPDF for PDF generation (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
   <script src="main.js"></script>
 </head>
 <body>
   <div class="container" id="adminContainer">
-    <h1>Admin Dashboard (Phase 1)</h1>
-    
+    <h1>Admin Dashboard (Phase 2)</h1>
     <div class="home-row">
       <a href="index.html" class="btn">Go Home</a>
       <button class="btn" onclick="handleLogout()">Logout</button>
     </div>
     
-    <hr>
-    <h2>Staff Management</h2>
-    <p>(Placeholder) In Phase 2, you’ll add forms for new staff, wage details, etc.</p>
-    
-    <hr>
-    <h2>Attendance Records</h2>
-    <p>(Placeholder) You can show/edit a table of attendance here in Phase 2.</p>
-    
-    <hr>
-    <h2>Shift Management</h2>
-    <p>(Placeholder) Create shift schedules, assign to staff, etc.</p>
-    
-    <hr>
-    <h2>Payslip Generation</h2>
-    <p>(Placeholder) Future feature for wage calculations, MC, AL, etc.</p>
-    
+    <!-- TABS -->
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button class="btn" onclick="showTab('staffTab')">Staff Mgmt</button>
+        <button class="btn" onclick="showTab('shiftTab')">Shift Mgmt</button>
+        <button class="btn" onclick="showTab('attendanceTab')">Attendance / Missed Punch</button>
+        <button class="btn" onclick="showTab('leaveTab')">Leave Requests</button>
+        <button class="btn" onclick="showTab('payslipTab')">Payslips</button>
+      </div>
+      
+      <!-- STAFF MGMT TAB -->
+      <div id="staffTab" class="tab-content">
+        <h2>Staff Management</h2>
+        <div>
+          <label>Passcode</label>
+          <input type="text" id="adm_passcode" class="input-field" placeholder="4-digit code">
+          
+          <label>Name</label>
+          <input type="text" id="adm_name" class="input-field" placeholder="Staff Name">
+          
+          <label>Role</label>
+          <select id="adm_role" class="input-field">
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+          </select>
+          
+          <label>Wage Type</label>
+          <select id="adm_wageType" class="input-field">
+            <option value="hourly">Hourly</option>
+            <option value="fixed">Fixed</option>
+          </select>
+          
+          <label>Wage Rate</label>
+          <input type="number" id="adm_wageRate" class="input-field" placeholder="e.g. 15">
+          
+          <label>Start Date</label>
+          <input type="date" id="adm_startDate" class="input-field">
+          
+          <button class="btn" onclick="adminSaveStaff()">Save/Update Staff</button>
+        </div>
+        
+        <h3>Staff List</h3>
+        <table id="adm_staffTable">
+          <thead>
+            <tr>
+              <th>Passcode</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>WageType</th>
+              <th>WageRate</th>
+              <th>StartDate</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <!-- SHIFT MGMT TAB -->
+      <div id="shiftTab" class="tab-content">
+        <h2>Shift Management</h2>
+        <div>
+          <label>Passcode (optional)</label>
+          <input type="text" id="shift_passcode" class="input-field" placeholder="Blank = all staff">
+          
+          <label>Date</label>
+          <input type="date" id="shift_date" class="input-field">
+          
+          <label>Start Time</label>
+          <input type="time" id="shift_start" class="input-field">
+          
+          <label>End Time</label>
+          <input type="time" id="shift_end" class="input-field">
+          
+          <button class="btn" onclick="adminCreateShift()">Create Shift</button>
+        </div>
+        
+        <h3>All Shifts</h3>
+        <button class="btn" onclick="downloadShiftsPDF()">Download PDF</button>
+        <table id="adm_shiftTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Passcode</th>
+              <th>Date</th>
+              <th>Start</th>
+              <th>End</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <!-- ATTENDANCE / MISSED PUNCH TAB -->
+      <div id="attendanceTab" class="tab-content">
+        <h2>Attendance & Missed Punch Requests</h2>
+        <button class="btn" onclick="refreshAttendanceTable()">Refresh Attendance</button>
+        
+        <h3>All Attendance</h3>
+        <table id="adm_attendanceTable">
+          <thead>
+            <tr>
+              <th>Passcode</th>
+              <th>Clock In</th>
+              <th>Clock Out</th>
+              <th>Hours</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        
+        <h3>Missed Punch Requests</h3>
+        <table id="adm_mpTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Passcode</th>
+              <th>Date</th>
+              <th>In</th>
+              <th>Out</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <!-- LEAVE TAB -->
+      <div id="leaveTab" class="tab-content">
+        <h2>Leave/MC Requests</h2>
+        <table id="adm_leaveTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Passcode</th>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <!-- PAYSLIPS TAB -->
+      <div id="payslipTab" class="tab-content">
+        <h2>Payslips</h2>
+        <div>
+          <label>Generate for Month (YYYY-MM)</label>
+          <input type="month" id="payslip_month" class="input-field">
+          <button class="btn" onclick="adminGeneratePayslips()">Generate</button>
+        </div>
+        
+        <h3>All Payslips</h3>
+        <table id="adm_payslipTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Passcode</th>
+              <th>Month</th>
+              <th>BasePay</th>
+              <th>LateDeduction</th>
+              <th>AbsentDeduction</th>
+              <th>NetPay</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div><!-- end .tab-container -->
   </div>
   
   <script>
+    // On load check admin session
+    window.onload = function() {
+      if (!isAdminLoggedIn()) {
+        alert("You are not logged in as Admin.");
+        window.location.href = "index.html";
+      } else {
+        showTab('staffTab');
+        refreshStaffTable();
+        refreshShiftTable();
+        refreshAttendanceTable();
+        refreshMissedPunchTable();
+        refreshLeaveTable();
+        refreshPayslipTable();
+      }
+    };
+
     function handleLogout() {
       adminLogout();
       window.location.href = "index.html";
     }
     
-    // Phase 1 check: If not logged in, redirect
-    window.onload = function() {
-      if (!isAdminLoggedIn()) {
-        alert("You are not logged in as Admin.");
-        window.location.href = "index.html";
+    // Tab switching
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    /* STAFF MGMT */
+    function adminSaveStaff() {
+      let passcode = document.getElementById("adm_passcode").value.trim();
+      let name = document.getElementById("adm_name").value.trim();
+      let role = document.getElementById("adm_role").value;
+      let wageType = document.getElementById("adm_wageType").value;
+      let wageRate = parseFloat(document.getElementById("adm_wageRate").value) || 0;
+      let startDate = document.getElementById("adm_startDate").value;
+      
+      if(!passcode) {
+        alert("Passcode required.");
+        return;
       }
-    };
+      let staffObj = { passcode, name, role, wageType, wageRate, startDate };
+      saveOrUpdateStaff(staffObj);
+      alert("Staff saved/updated.");
+      refreshStaffTable();
+    }
+    function refreshStaffTable() {
+      let list = getStaffList();
+      let tbody = document.querySelector("#adm_staffTable tbody");
+      tbody.innerHTML = "";
+      list.forEach(s => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${s.passcode}</td>
+          <td>${s.name || ""}</td>
+          <td>${s.role}</td>
+          <td>${s.wageType}</td>
+          <td>${s.wageRate}</td>
+          <td>${s.startDate || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* SHIFT MGMT */
+    function adminCreateShift() {
+      let passcode = document.getElementById("shift_passcode").value.trim();
+      let date = document.getElementById("shift_date").value;
+      let startTime = document.getElementById("shift_start").value;
+      let endTime = document.getElementById("shift_end").value;
+      if(!date || !startTime || !endTime) {
+        alert("Please fill date, start, end time.");
+        return;
+      }
+      let shiftId = "SH_" + Date.now();
+      let shiftObj = { shiftId, passcode, date, startTime, endTime };
+      let res = createShift(shiftObj);
+      if(res.success) alert(res.success);
+      refreshShiftTable();
+    }
+    function refreshShiftTable() {
+      let sList = getShiftList();
+      let tbody = document.querySelector("#adm_shiftTable tbody");
+      tbody.innerHTML = "";
+      sList.forEach(s => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${s.shiftId}</td>
+          <td>${s.passcode || ""}</td>
+          <td>${s.date}</td>
+          <td>${s.startTime}</td>
+          <td>${s.endTime}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    /* Example: Download Shifts as PDF */
+    function downloadShiftsPDF() {
+      let sList = getShiftList();
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("Shifts List", 10, 10);
+      let yPos = 20;
+      sList.forEach(s => {
+        doc.text(`ID: ${s.shiftId}, Pass: ${s.passcode}, Date: ${s.date}, Start: ${s.startTime}, End: ${s.endTime}`, 10, yPos);
+        yPos += 10;
+      });
+      doc.save("shifts.pdf");
+    }
+
+    /* ATTENDANCE */
+    function refreshAttendanceTable() {
+      let att = getAttendanceList();
+      let tbody = document.querySelector("#adm_attendanceTable tbody");
+      tbody.innerHTML = "";
+      att.forEach(a => {
+        let ci = a.clockIn ? new Date(a.clockIn).toLocaleString() : "";
+        let co = a.clockOut ? new Date(a.clockOut).toLocaleString() : "";
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${a.passcode}</td>
+          <td>${ci}</td>
+          <td>${co}</td>
+          <td>${a.hours}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    /* MISSED PUNCH */
+    function refreshMissedPunchTable() {
+      let mpList = getMissedPunchList();
+      let tbody = document.querySelector("#adm_mpTable tbody");
+      tbody.innerHTML = "";
+      mpList.forEach(mp => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${mp.mpId}</td>
+          <td>${mp.passcode}</td>
+          <td>${mp.date}</td>
+          <td>${mp.desiredIn || ""}</td>
+          <td>${mp.desiredOut || ""}</td>
+          <td>${mp.status}</td>
+          <td>
+            ${mp.status === "Pending" ? `
+              <button class="btn" onclick="approveMP('${mp.mpId}')">Approve</button>
+              <button class="btn" onclick="rejectMP('${mp.mpId}')">Reject</button>
+            ` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function approveMP(mpId) {
+      let res = approveMissedPunch(mpId);
+      if(res.error) alert(res.error);
+      else alert(res.success);
+      refreshAttendanceTable();
+      refreshMissedPunchTable();
+    }
+    function rejectMP(mpId) {
+      let res = rejectMissedPunch(mpId);
+      if(res.error) alert(res.error);
+      else alert(res.success);
+      refreshMissedPunchTable();
+    }
+    
+    /* LEAVE REQUESTS */
+    function refreshLeaveTable() {
+      let lvList = getLeaveList();
+      let tbody = document.querySelector("#adm_leaveTable tbody");
+      tbody.innerHTML = "";
+      lvList.forEach(lv => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${lv.leaveId}</td>
+          <td>${lv.passcode}</td>
+          <td>${lv.date}</td>
+          <td>${lv.leaveType}</td>
+          <td>${lv.status}</td>
+          <td>
+            ${lv.status === "Pending" ? `
+              <button class="btn" onclick="approveLV('${lv.leaveId}')">Approve</button>
+              <button class="btn" onclick="rejectLV('${lv.leaveId}')">Reject</button>
+            ` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function approveLV(leaveId) {
+      let res = approveLeave(leaveId);
+      if(res.error) alert(res.error);
+      else alert(res.success);
+      refreshLeaveTable();
+    }
+    function rejectLV(leaveId) {
+      let res = rejectLeave(leaveId);
+      if(res.error) alert(res.error);
+      else alert(res.success);
+      refreshLeaveTable();
+    }
+    
+    /* PAYSLIPS */
+    function adminGeneratePayslips() {
+      let monthVal = document.getElementById("payslip_month").value; // "2025-03"
+      if(!monthVal) {
+        alert("Please select a month (YYYY-MM).");
+        return;
+      }
+      let res = generatePayslipsForMonth(monthVal);
+      if(res.success) alert(res.success);
+      refreshPayslipTable();
+    }
+    function refreshPayslipTable() {
+      let psList = getPayslipList();
+      let tbody = document.querySelector("#adm_payslipTable tbody");
+      tbody.innerHTML = "";
+      psList.forEach(ps => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${ps.payslipId}</td>
+          <td>${ps.passcode}</td>
+          <td>${ps.month}</td>
+          <td>${ps.basePay}</td>
+          <td>${ps.lateDeduction}</td>
+          <td>${ps.absentDeduction}</td>
+          <td>${ps.netPay}</td>
+          <td>${ps.status}</td>
+          <td>
+            <button class="btn" onclick="downloadPayslipPDF(${JSON.stringify(ps).replace(/"/g,'&quot;')})">PDF</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
   </script>
 </body>
 </html>
