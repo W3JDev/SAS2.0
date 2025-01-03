@@ -1,15 +1,15 @@
-<!-- staff-home.html -->
+<!-- staff-home.html - Phase 2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Staff Home</title>
+  <title>Staff Home (Phase 2)</title>
   <link rel="stylesheet" href="style.css">
   <script src="main.js"></script>
 </head>
 <body>
   <div class="container" id="staffContainer">
-    <h1>Staff Portal (Phase 1)</h1>
+    <h1>Staff Portal (Phase 2)</h1>
     
     <div class="home-row">
       <a href="index.html" class="btn">Go Home</a>
@@ -21,16 +21,57 @@
     <p id="staffProfileArea"></p>
     
     <hr>
-    <h2>Your Attendance</h2>
-    <p>(Placeholder) In Phase 2, you’ll see clock in/out records, request missed punch, etc.</p>
+    <h2>Your Shifts</h2>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Start</th><th>End</th></tr>
+      </thead>
+      <tbody id="staffShiftTable"></tbody>
+    </table>
     
     <hr>
-    <h2>Your Shifts / Leaves</h2>
-    <p>(Placeholder) Phase 2: shift schedule, MC/AL/UL submissions, etc.</p>
+    <h2>Missed Punch Request</h2>
+    <p>Submit if you forgot to clock in/out (last 7 days only)</p>
+    <label>Date</label>
+    <input type="date" id="mp_date" class="input-field">
+    <label>Desired Clock In (YYYY-MM-DDTHH:MM)</label>
+    <input type="datetime-local" id="mp_in" class="input-field">
+    <label>Desired Clock Out (YYYY-MM-DDTHH:MM)</label>
+    <input type="datetime-local" id="mp_out" class="input-field">
+    <button class="btn" onclick="staffSubmitMissedPunch()">Submit</button>
+    
+    <hr>
+    <h2>Leave/MC Request</h2>
+    <p>Select date & type of leave. (MC, AL, UL). File upload is placeholder only.</p>
+    <label>Date</label>
+    <input type="date" id="lv_date" class="input-field">
+    <label>Type</label>
+    <select id="lv_type" class="input-field">
+      <option value="MC">MC</option>
+      <option value="AL">Annual Leave</option>
+      <option value="UL">Unpaid Leave</option>
+    </select>
+    <label>Upload MC File (Optional)</label>
+    <input type="file" id="lv_file" class="input-field">
+    <button class="btn" onclick="staffSubmitLeave()">Submit</button>
     
     <hr>
     <h2>Your Payslips</h2>
-    <p>(Placeholder) Accept/approve payslips in next phases.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Month</th>
+          <th>Base</th>
+          <th>LateDeduct</th>
+          <th>AbsentDeduct</th>
+          <th>NetPay</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="staffPayslipTable"></tbody>
+    </table>
   </div>
   
   <script>
@@ -54,14 +95,99 @@
         window.location.href = "index.html";
         return;
       }
-      // Display basic info
+      displayStaffProfile();
+      displayStaffShifts();
+      displayStaffPayslips();
+    };
+    
+    function displayStaffProfile() {
       document.getElementById("staffProfileArea").innerText = 
         `Name: ${currentStaff.name}\n` +
         `Passcode: ${currentStaff.passcode}\n` +
         `Role: ${currentStaff.role}\n` +
         `Start Date: ${currentStaff.startDate}\n` +
         `WageType: ${currentStaff.wageType}, WageRate: ${currentStaff.wageRate}`;
-    };
+    }
+    
+    function displayStaffShifts() {
+      let sList = getShiftList();
+      let myShifts = sList.filter(s => !s.passcode || s.passcode === currentStaff.passcode);
+      let tbody = document.getElementById("staffShiftTable");
+      tbody.innerHTML = "";
+      myShifts.forEach(sh => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td>${sh.date}</td><td>${sh.startTime}</td><td>${sh.endTime}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    function staffSubmitMissedPunch() {
+      let date = document.getElementById("mp_date").value;
+      let desiredIn = document.getElementById("mp_in").value;
+      let desiredOut = document.getElementById("mp_out").value;
+      if(!date) {
+        alert("Please select a date.");
+        return;
+      }
+      let res = submitMissedPunch(currentStaff.passcode, date, desiredIn, desiredOut);
+      if(res.error) alert(res.error);
+      else alert(res.success);
+    }
+    
+    function staffSubmitLeave() {
+      let date = document.getElementById("lv_date").value;
+      let leaveType = document.getElementById("lv_type").value;
+      let fileInput = document.getElementById("lv_file");
+      let docFileBase64 = null;
+      if(fileInput.files && fileInput.files[0]) {
+        // convert to base64 (careful with large files)
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          docFileBase64 = e.target.result;
+          let res = submitLeave(currentStaff.passcode, date, leaveType, docFileBase64);
+          if(res.error) alert(res.error);
+          else alert(res.success);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        // no file
+        let res = submitLeave(currentStaff.passcode, date, leaveType, null);
+        if(res.error) alert(res.error);
+        else alert(res.success);
+      }
+    }
+    
+    function displayStaffPayslips() {
+      let psList = getStaffPayslips(currentStaff.passcode);
+      let tbody = document.getElementById("staffPayslipTable");
+      tbody.innerHTML = "";
+      psList.forEach(ps => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${ps.payslipId}</td>
+          <td>${ps.month}</td>
+          <td>${ps.basePay}</td>
+          <td>${ps.lateDeduction}</td>
+          <td>${ps.absentDeduction}</td>
+          <td>${ps.netPay}</td>
+          <td>${ps.status}</td>
+          <td>
+            ${ps.status === "Published" ? `<button class="btn" onclick="acceptMyPayslip('${ps.payslipId}')">Accept</button>` : ''}
+            <button class="btn" onclick="downloadPayslipPDF(${JSON.stringify(ps).replace(/"/g,'&quot;')})">PDF</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    function acceptMyPayslip(pid) {
+      let res = acceptPayslip(pid);
+      if(res.error) alert(res.error);
+      else {
+        alert(res.success);
+        displayStaffPayslips();
+      }
+    }
   </script>
 </body>
 </html>
